@@ -165,8 +165,9 @@ test('payload collapses blank-line runs', () => {
 });
 
 test('payload falls back to a title for an untitled note', () => {
-  assert.equal(reminderNotifyPayload({ id: 'n1', title: '   ', body: 'x' }).title, 'Sticky note');
-  assert.equal(reminderNotifyPayload({ id: 'n1' }).title, 'Sticky note');
+  for (const n of [{ id: 'n1', title: '   ', body: 'x' }, { id: 'n1' }, { id: 'n1', title: 42 }]) {
+    assert.equal(reminderNotifyPayload(n).title, 'Sticky note');
+  }
 });
 
 test('payload truncates a long body with an ellipsis', () => {

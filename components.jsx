@@ -437,7 +437,7 @@ function MobileDemoBanner() {
 /* TOP CHROME                                                            */
 /* ==================================================================== */
 function TopChrome({T, tweaks, currentFolderName, query, setQuery, onNewNote, onNewFolder, onExport, onImport}) {
-  const isTerm = tweaks.theme==='terminal';
+  const isTerm = T.sharp;
   const [backupOpen, setBackupOpen] = useState(false);
 
   // Narrow-viewport detection, used to hide the "Sticky Notes" wordmark on
@@ -1175,7 +1175,7 @@ function Desktop({T, tweaks, currentFolder, folders, folderOrder, notes, allNote
         backgroundImage:`radial-gradient(${withA(T.panelText,.07)} 1px, transparent 1px)`,
         backgroundSize:`${24*view.z}px ${24*view.z}px`,
         backgroundPosition:`${view.x}px ${view.y}px`,
-        opacity: tweaks.theme==='terminal'?.3:.5,
+        opacity: T.dark?.3:.5,
       }}/>
 
       <div id="desk-inner" style={{
@@ -1284,7 +1284,7 @@ function Desktop({T, tweaks, currentFolder, folders, folderOrder, notes, allNote
       <div style={{
         position:'absolute', left:16, bottom:16, display:'flex', alignItems:'center', gap:2,
         background:T.panelBg, border:`1px solid ${T.panelBorder}`,
-        borderRadius: tweaks.theme==='terminal'?2:8, padding:3,
+        borderRadius: T.sharp?2:8, padding:3,
         boxShadow:'0 2px 8px rgba(0,0,0,.08)', zIndex:500,
         fontFamily: '"'+tweaks.font+'", system-ui, sans-serif',
       }}>
@@ -1303,7 +1303,7 @@ function Desktop({T, tweaks, currentFolder, folders, folderOrder, notes, allNote
         <div style={{
           position:'absolute', left:'50%', bottom:16, transform:'translateX(-50%)',
           background:T.panelText, color:T.panelBg, padding:'6px 14px',
-          borderRadius: tweaks.theme==='terminal'?2:999, fontSize:12, fontWeight:600, letterSpacing:.3,
+          borderRadius: T.sharp?2:999, fontSize:12, fontWeight:600, letterSpacing:.3,
           boxShadow:'0 4px 12px rgba(0,0,0,.2)', pointerEvents:'none', zIndex:500,
           fontFamily: '"'+tweaks.font+'", system-ui, sans-serif',
         }}>✋ drag to pan</div>
@@ -1349,8 +1349,8 @@ function Desktop({T, tweaks, currentFolder, folders, folderOrder, notes, allNote
       {linkingFrom && (
         <div style={{
           position:'absolute', left:'50%', top:16, transform:'translateX(-50%)',
-          background:T.accent, color: tweaks.theme==='terminal'?'#0a0c10':'#fff', padding:'7px 14px',
-          borderRadius: tweaks.theme==='terminal'?2:999, fontSize:12, fontWeight:700, letterSpacing:.3,
+          background:T.accent, color:T.onAccent, padding:'7px 14px',
+          borderRadius: T.sharp?2:999, fontSize:12, fontWeight:700, letterSpacing:.3,
           boxShadow:'0 4px 12px rgba(0,0,0,.2)', pointerEvents:'none', zIndex:500,
           fontFamily: '"'+tweaks.font+'", system-ui, sans-serif',
         }}>🔗 click a note to link · esc to cancel</div>
@@ -1726,7 +1726,7 @@ function StickyNote({note, T, tweaks, folder, refCb, selected, selectedIds, setS
   useEffect(() => { refCb(el.current); return ()=>refCb(null); }, [refCb]);
 
   const col = NOTE_COLORS.find(c => c.id===note.color) || NOTE_COLORS[0];
-  const bg = tweaks.theme==='paper' ? col.paper : tweaks.theme==='flat' ? col.flat : col.term;
+  const bg = col[T.noteKey] || col.paper;
   const ink = col.ink;
 
   // Remembers pointer-down coords on any header button (pin, link, ×) so we
@@ -1823,7 +1823,7 @@ function StickyNote({note, T, tweaks, folder, refCb, selected, selectedIds, setS
     startPointerDrag(e, move);
   };
 
-  const rot = tweaks.theme==='paper' && tweaks.tilt !== false ? hashRot(note.id) : 0;
+  const rot = T.tiltable && tweaks.tilt !== false ? hashRot(note.id) : 0;
   // Caveat (the "Handwritten" font) has a much smaller x-height than the other
   // faces, so at a shared px size it reads noticeably smaller and harder to make
   // out. Scale note text up when it's active so it sits at a comparable visual
@@ -1862,8 +1862,8 @@ function StickyNote({note, T, tweaks, folder, refCb, selected, selectedIds, setS
       <div onPointerDown={onHeaderDown} onDoubleClick={()=>setEditingTitle(true)}
         style={{
           display:'flex', alignItems:'center', gap:8, padding:'6px 10px',
-          background: tweaks.theme==='terminal' ? 'rgba(0,0,0,.2)' : 'rgba(0,0,0,.05)',
-          borderBottom: tweaks.theme==='terminal' ? `1px solid ${T.panelBorder}` : '1px solid rgba(0,0,0,.04)',
+          background: T.dark ? 'rgba(0,0,0,.2)' : 'rgba(0,0,0,.05)',
+          borderBottom: T.dark ? `1px solid ${T.panelBorder}` : '1px solid rgba(0,0,0,.04)',
           // touchAction none: with the body no longer a drag surface (#30),
           // the header/footer are the only ways to move a note by touch —
           // keep the browser from stealing their pointermoves for scrolling.
@@ -2071,8 +2071,8 @@ function StickyNote({note, T, tweaks, folder, refCb, selected, selectedIds, setS
         style={{
           flex:1, padding:'10px 14px', overflow:'auto',
           fontFamily: '"'+tweaks.font+'", system-ui, sans-serif',
-          fontSize: (tweaks.theme==='paper' ? 18 : 13.5) * fontScale,
-          lineHeight: tweaks.theme==='paper' ? 1.35 : 1.5,
+          fontSize: T.noteFontSize * fontScale,
+          lineHeight: T.noteLineHeight,
           color:ink,
           // Body text is selectable like a normal web page (issue #30) so a
           // snippet can be copied without entering edit mode. Only the header
@@ -2197,8 +2197,8 @@ function StickyNote({note, T, tweaks, folder, refCb, selected, selectedIds, setS
         title="Drag to move"
         style={{
         padding:'5px 10px', display:'flex', alignItems:'center', gap:6, flex:'none',
-        borderTop: tweaks.theme==='terminal' ? `1px solid ${T.panelBorder}` : '1px solid rgba(0,0,0,.05)',
-        background: tweaks.theme==='terminal' ? 'rgba(0,0,0,.2)' : 'transparent',
+        borderTop: T.dark ? `1px solid ${T.panelBorder}` : '1px solid rgba(0,0,0,.05)',
+        background: T.dark ? 'rgba(0,0,0,.2)' : 'transparent',
         fontSize:10, color:ink, opacity:.75,
         cursor:'grab', userSelect:'none', touchAction:'none',
       }}>
@@ -2494,8 +2494,8 @@ function FoldersDrawer({T, tweaks, folders, notes, currentFolder, setCurrentFold
   open, setOpen,
   folderOrder, setFolderOrder}) {
 
-  const isTerm = tweaks.theme==='terminal';
-  const isPaper = tweaks.theme==='paper';
+  const isTerm = T.sharp;
+  const isPaper = T.washi;
   // Row currently hovered by a folder drag, with the drop zone the pointer
   // is in. Shape: {id, zone: 'before'|'after'|'into'} | null.
   const [dragOver, setDragOver] = useState(null);
@@ -3067,9 +3067,8 @@ function TweakPanel({T, tweaks, update, onClose, onImportFromImage}) {
         )}
       </div>
       <Label>Visual style</Label>
-      <Segmented T={T} value={tweaks.theme} onChange={v=>update({theme:v})} options={[
-        {id:'paper',label:'Paper'},{id:'flat',label:'Flat'},{id:'terminal',label:'Terminal'}
-      ]}/>
+      <Segmented T={T} wrap value={tweaks.theme} onChange={v=>update({theme:v})}
+        options={THEME_IDS.map(id => ({id, label: THEME_LABELS[id]}))}/>
       <Label>Font</Label>
       <Segmented T={T} value={tweaks.font} onChange={v=>update({font:v})} options={[
         {id:'Inter',label:'Inter'},{id:'Source Serif 4',label:'Serif'},{id:'IBM Plex Mono',label:'Mono'},{id:'Caveat',label:'Handwritten'}
@@ -3128,9 +3127,9 @@ function PanelAction({T, onClick, children}) {
 function Label({children}) {
   return <div style={{fontSize:11, textTransform:'uppercase', letterSpacing:1, opacity:.6, margin:'12px 0 6px'}}>{children}</div>;
 }
-function Segmented({T, value, onChange, options}) {
+function Segmented({T, value, onChange, options, wrap}) {
   return (
-    <div style={{display:'flex', background: withA(hoverInk(T), .07), padding:2, borderRadius:8, border:`1px solid ${T.panelBorder}`, gap:2}}>
+    <div style={{display:'flex', flexWrap: wrap?'wrap':'nowrap', background: withA(hoverInk(T), .07), padding:2, borderRadius:8, border:`1px solid ${T.panelBorder}`, gap:2}}>
       {options.map(o => {
         const active = value===o.id;
         // Only the inactive segments take a hover — repainting the selected
@@ -3140,7 +3139,7 @@ function Segmented({T, value, onChange, options}) {
             onMouseEnter={e=>{ if(!active) e.currentTarget.style.background = hoverBg(T); }}
             onMouseLeave={e=>{ if(!active) e.currentTarget.style.background = 'transparent'; }}
             style={{
-              flex:1, border:'none', padding:'6px 8px', fontSize:12, borderRadius:6,
+              flex: wrap ? '1 1 28%' : 1, border:'none', padding:'6px 8px', fontSize:12, borderRadius:6,
               background: active ? T.panelBg : 'transparent',
               boxShadow: active ? `0 1px 2px rgba(0,0,0,.08), 0 0 0 1px ${T.panelBorder}` : 'none',
               color:T.panelText, fontWeight: active?600:500, cursor:'pointer',

@@ -35,9 +35,9 @@ This is that app. It runs on **Linux, macOS, and in the browser**.
 
 **Folders that aren't an afterthought.** Colored folder badges, per-folder note counts, and a drawer that actually gets out of the way when you want it to.
 
-**Three looks — because a 2pm notes session and a 2am notes session are not the same notes session.**
+**Six looks — because a 2pm notes session and a 2am notes session are not the same notes session.**
 
-Paper is the default. Flat if you want something quieter. Terminal if you've made peace with what you are.
+Paper is the default. Flat if you want something quieter. Terminal if you've made peace with what you are. Then three for the dark: Tokyo, Nord, and Dracula.
 
 <table>
 <tr>

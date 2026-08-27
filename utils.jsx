@@ -1137,31 +1137,35 @@ function reminderNotifyPayload(note) {
     body,
   };
 }
-/* ---------- THEME TOKENS ---------- */
-function themeTokens(theme) {
-  if (theme === 'terminal') {
-    return {
-      wallpaper: 'radial-gradient(1200px 800px at 20% 10%, #1b2028 0%, #0e1116 60%, #0a0c10 100%)',
-      panelBg: '#141a22', panelBorder: '#2a3340', panelText: '#cfe0d4',
-      accent: '#8fd27a', muted: '#7b8a9a', hairline: '#1d2530',
-      noteShadow: '0 0 0 1px #2a3340, 0 8px 22px rgba(0,0,0,.5)',
-      noteRadius: '4px',
-      bodyFont: '"JetBrains Mono", "IBM Plex Mono", monospace',
-      folderBg: '#1a2230', folderBorder: '#2f3b4c',
-    };
-  }
-  if (theme === 'flat') {
-    return {
-      wallpaper: 'linear-gradient(135deg,#e9edf2 0%, #dde3eb 100%)',
-      panelBg: '#ffffff', panelBorder: '#d6dce4', panelText: '#1f2430',
-      accent: '#3584e4', muted: '#6a7383', hairline: '#eaeef3',
-      noteShadow: '0 1px 2px rgba(20,30,50,.06), 0 6px 20px rgba(20,30,50,.08)',
-      noteRadius: '10px',
-      bodyFont: 'Inter, system-ui, sans-serif',
-      folderBg: '#f3f5f9', folderBorder: '#d6dce4',
-    };
-  }
-  return {
+/* ---------- THEME TOKENS ----------
+ * One entry per theme. Beyond colours, each carries the handful of BEHAVIOUR
+ * flags the UI used to derive by comparing the theme id (`tweaks.theme ===
+ * 'terminal'`) in a dozen scattered places — which meant every new theme
+ * silently fell into the "not paper, not flat" branch and inherited
+ * terminal's squared-off chrome. Reading the flag instead of the id is what
+ * lets a theme be added here and nowhere else:
+ *   dark          — dark surface; drives the translucent black overlays
+ *   sharp         — terminal's squared-off chrome (2px radii, no pills)
+ *   washi         — paper's washi-tape folder tabs
+ *   tiltable      — notes may be rotated slightly (paper only)
+ *   noteKey       — which NOTE_COLORS variant a note's surface uses
+ *   onAccent      — text colour that reads on top of `accent`
+ *   noteFontSize / noteLineHeight — paper's handwriting needs more room
+ * A new theme that sets neither `sharp` nor `washi` takes exactly the same
+ * code paths as `flat`, which is the well-trodden one.
+ */
+const THEME_BASE = {
+  dark: true, sharp: false, washi: false, tiltable: false,
+  noteKey: 'term', onAccent: '#fff', noteFontSize: 13.5, noteLineHeight: 1.5,
+  noteShadow: '0 1px 2px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.35)',
+  noteRadius: '8px',
+  bodyFont: 'Inter, system-ui, sans-serif',
+};
+
+const THEMES = {
+  paper: {
+    dark: false, washi: true, tiltable: true, noteKey: 'paper',
+    noteFontSize: 18, noteLineHeight: 1.35,
     wallpaper: "linear-gradient(180deg,#efe8dc 0%, #e5dbc8 100%)",
     panelBg: '#fbf7ef', panelBorder: '#d8cfbc', panelText: '#2a241a',
     accent: '#b8621b', muted: '#7a6f5b', hairline: '#e6dfce',
@@ -1169,9 +1173,56 @@ function themeTokens(theme) {
     noteRadius: '2px',
     bodyFont: 'Caveat, "Segoe Script", cursive',
     folderBg: '#f3ead7', folderBorder: '#d8cfbc',
-  };
-}
+  },
+  flat: {
+    dark: false, noteKey: 'flat',
+    wallpaper: 'linear-gradient(135deg,#e9edf2 0%, #dde3eb 100%)',
+    panelBg: '#ffffff', panelBorder: '#d6dce4', panelText: '#1f2430',
+    accent: '#3584e4', muted: '#6a7383', hairline: '#eaeef3',
+    noteShadow: '0 1px 2px rgba(20,30,50,.06), 0 6px 20px rgba(20,30,50,.08)',
+    noteRadius: '10px',
+    folderBg: '#f3f5f9', folderBorder: '#d6dce4',
+  },
+  terminal: {
+    sharp: true, onAccent: '#0a0c10',
+    wallpaper: 'radial-gradient(1200px 800px at 20% 10%, #1b2028 0%, #0e1116 60%, #0a0c10 100%)',
+    panelBg: '#141a22', panelBorder: '#2a3340', panelText: '#cfe0d4',
+    accent: '#8fd27a', muted: '#7b8a9a', hairline: '#1d2530',
+    noteShadow: '0 0 0 1px #2a3340, 0 8px 22px rgba(0,0,0,.5)',
+    noteRadius: '4px',
+    bodyFont: '"JetBrains Mono", "IBM Plex Mono", monospace',
+    folderBg: '#1a2230', folderBorder: '#2f3b4c',
+  },
+  // Tokyo Night: the storm variant's blues and violets.
+  tokyo: {
+    wallpaper: 'radial-gradient(1100px 800px at 25% 8%, #24283b 0%, #1a1b26 55%, #16161e 100%)',
+    panelBg: '#1f2335', panelBorder: '#2f3549', panelText: '#c0caf5',
+    accent: '#7aa2f7', onAccent: '#16161e', muted: '#565f89', hairline: '#292e42',
+    folderBg: '#24283b', folderBorder: '#343b58',
+  },
+  nord: {
+    wallpaper: 'linear-gradient(160deg,#3b4252 0%, #2e3440 60%, #272c36 100%)',
+    panelBg: '#3b4252', panelBorder: '#4c566a', panelText: '#e5e9f0',
+    accent: '#88c0d0', onAccent: '#2e3440', muted: '#8b98ad', hairline: '#434c5e',
+    folderBg: '#434c5e', folderBorder: '#4c566a',
+  },
+  dracula: {
+    wallpaper: 'radial-gradient(1100px 800px at 20% 10%, #343746 0%, #282a36 60%, #21222c 100%)',
+    panelBg: '#2f313f', panelBorder: '#44475a', panelText: '#f8f8f2',
+    accent: '#bd93f9', onAccent: '#21222c', muted: '#7f8ab5', hairline: '#3a3d4d',
+    folderBg: '#343746', folderBorder: '#44475a',
+  },
+};
 
+// Ordered for the Preferences picker; also the list withDefaults validates against.
+const THEME_IDS = Object.keys(THEMES);
+const THEME_LABELS = { paper:'Paper', flat:'Flat', terminal:'Terminal', tokyo:'Tokyo', nord:'Nord', dracula:'Dracula' };
+
+// Unknown ids fall back to paper rather than returning undefined tokens — a
+// store written by a newer build (or hand-edited) must still render.
+function themeTokens(theme) {
+  return { ...THEME_BASE, ...(THEMES[theme] || THEMES.paper) };
+}
 function uid(pre='id') { return pre + '_' + Math.random().toString(36).slice(2,8); }
 function hashRot(id) { let h=0; for (let i=0;i<id.length;i++) h=(h*31+id.charCodeAt(i))|0; return ((h%7)-3)*0.4; }
 // True when the user has actual text highlighted (e.g. drag-selected in a
@@ -1473,4 +1524,4 @@ function downloadUrlForPlatform(version) {
 }
 const MOBILE_BANNER_DISMISSED_KEY = 'stickies.mobileBannerDismissed';
 const MOBILE_BANNER_MAX_WIDTH = 640;
-Object.assign(window, { CLIPBOARD_IMAGE_BYTES, FOLDER_HUES, HOVER_ALPHA, MOBILE_BANNER_DISMISSED_KEY, MOBILE_BANNER_MAX_WIDTH, NOTE_COLORS, REMINDER_MAX_MINUTES, REMINDER_MIN_MINUTES, REMINDER_PRESETS, SEED, STICKY_CLIPBOARD_MARKER, TWEAK_DEFAULTS, WHATS_NEW_ID, ZOOM_MAX, ZOOM_MIN, canMoveFolder, canvasPasteAction, clipboardImagesFor, clipboardTextToNotes, cmpSemver, downloadJSON, downloadNoteAsMarkdown, downloadUrlForPlatform, editLinkOnPaste, editListOnEnter, editListOnTab, editQuoteOnPaste, flattenFolderTree, flattenPreviewText, folderPath, folderSubtreeIds, hashRot, hasTextSelection, hexChannels, hoverBg, hoverInk, imageMimeForFile, imageRefsInNotes, isDarkSurface, markdownFileBody, markdownFileTitle, markdownFileToNote, markdownVisibleText, mdToHtml, mixHex, normHex, normalizeReminder, noteDownloadFilename, notesToClipboardText, noteToMarkdown, openWebLink, pickJSONFile, pickMarkdownFiles, reminderNotifyPayload, reminderTick, renderedWordAt, sanitizeFolderParents, sourceCaretForPreviewClick, sourceOffsetForWord, themeTokens, uid, whatsNewInfo, withA, withDefaults, zoomActionForKey, zoomViewAt });
+Object.assign(window, { CLIPBOARD_IMAGE_BYTES, FOLDER_HUES, HOVER_ALPHA, MOBILE_BANNER_DISMISSED_KEY, MOBILE_BANNER_MAX_WIDTH, NOTE_COLORS, REMINDER_MAX_MINUTES, REMINDER_MIN_MINUTES, REMINDER_PRESETS, SEED, STICKY_CLIPBOARD_MARKER, THEME_IDS, THEME_LABELS, THEMES, TWEAK_DEFAULTS, WHATS_NEW_ID, ZOOM_MAX, ZOOM_MIN, canMoveFolder, canvasPasteAction, clipboardImagesFor, clipboardTextToNotes, cmpSemver, downloadJSON, downloadNoteAsMarkdown, downloadUrlForPlatform, editLinkOnPaste, editListOnEnter, editListOnTab, editQuoteOnPaste, flattenFolderTree, flattenPreviewText, folderPath, folderSubtreeIds, hashRot, hasTextSelection, hexChannels, hoverBg, hoverInk, imageMimeForFile, imageRefsInNotes, isDarkSurface, markdownFileBody, markdownFileTitle, markdownFileToNote, markdownVisibleText, mdToHtml, mixHex, normHex, normalizeReminder, noteDownloadFilename, notesToClipboardText, noteToMarkdown, openWebLink, pickJSONFile, pickMarkdownFiles, reminderNotifyPayload, reminderTick, renderedWordAt, sanitizeFolderParents, sourceCaretForPreviewClick, sourceOffsetForWord, themeTokens, uid, whatsNewInfo, withA, withDefaults, zoomActionForKey, zoomViewAt });
