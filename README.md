@@ -54,13 +54,15 @@ Paper is the default. Flat if you want something quieter. Terminal if you've mad
 
 ![Close-up of notes with link arrow](readme-assets/04-closeup.png)
 
+**Notes that nudge you.** Right-click any note and set a reminder — every 5 minutes, every hour, or any interval you type. Your desktop shows it as an ordinary notification, titled with the note and bodied with its text. A bell in the note's header says one is running; click it to change the interval or switch it off. Reminders run while Sticky Notes is open, and stop the moment you turn one off or delete the note.
+
 ---
 
 ## What it does *not* do
 
 - Sync to the cloud. (I may add this. I also may not.)
 - Collaborate in real time. These are sticky notes.
-- Send you notifications. These are sticky notes.
+- Nag you when the app is closed. Reminders need Sticky Notes running — there is no background daemon and no tray icon.
 - Parse your notes with a large language model to surface insights. **These are sticky notes.**
 
 ---

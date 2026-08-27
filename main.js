@@ -1,4 +1,4 @@
-const { app, BrowserWindow, clipboard, ipcMain, Menu, dialog, net, protocol, shell } = require('electron');
+const { app, BrowserWindow, clipboard, ipcMain, Menu, Notification, dialog, net, protocol, shell } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const { pathToFileURL } = require('node:url');
@@ -373,6 +373,44 @@ ipcMain.handle('images:write', async (_e, images) => {
     const { written, skipped, rejected } = writeImages(imagesDir(), images);
     for (const r of rejected) console.warn(`[main] pasted image refused (${r.name}): ${r.reason}`);
     return { ok: true, written, skipped, rejected };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
+/* ---------- Per-note reminders ----------
+ * A note can carry { everyMinutes, enabled }; the renderer owns the schedule
+ * (see useReminders in hooks.jsx) and calls this when one comes due. All main
+ * does is hand the note to the desktop's own notification service — GNOME
+ * Shell on Ubuntu, Notification Center on macOS — so a reminder looks and
+ * behaves like every other notification on the system.
+ *
+ * Everything is re-validated here because this is the process boundary, and
+ * the lengths are capped because this payload crosses the IPC on a timer.
+ */
+ipcMain.handle('reminder:notify', async (_e, payload) => {
+  if (!Notification.isSupported()) return { ok: false, error: 'notifications are unavailable' };
+  const { noteId, title, body } = payload || {};
+  if (typeof noteId !== 'string' || !noteId) return { ok: false, error: 'no note id' };
+  try {
+    const n = new Notification({
+      title: String(title || 'Sticky note').slice(0, 120),
+      body:  String(body == null ? '' : body).slice(0, 400),
+      icon:  path.join(__dirname, 'build', 'icon.png'),
+      urgency: 'normal',
+    });
+    // On Linux this arrives as the notification's default action. Some
+    // desktops never send one, in which case the reminder is simply
+    // informational — nothing else depends on the click.
+    n.on('click', () => {
+      if (!mainWindow || mainWindow.isDestroyed()) return;
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.show();
+      mainWindow.focus();
+      mainWindow.webContents.send('reminder:open', noteId);
+    });
+    n.show();
+    return { ok: true };
   } catch (err) {
     return { ok: false, error: err.message };
   }

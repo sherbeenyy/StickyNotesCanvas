@@ -672,6 +672,7 @@ function Desktop({T, tweaks, currentFolder, folders, folderOrder, notes, allNote
   links, addLink, removeLink, linksFor,
   updateNote, bringToFront, bringGroupToFront, focusNote, onDeleteNote, selectedIds, setSelectedIds, setNotes,
   jumpToNote, moveNoteToFolder, moveNotesToFolder, onCreateNote, onImportMarkdown, onCopyNotes,
+  onSetReminder,
   view, setView, drawerOpen, takeSnapshot}) {
 
   // Tree-ordered folder list (with depth) for the per-note "Move to folder"
@@ -1269,6 +1270,7 @@ function Desktop({T, tweaks, currentFolder, folders, folderOrder, notes, allNote
             onAddLink={(toId)=>addLink(n.id, toId)}
             onStartLink={()=>setLinkingFrom({id:n.id, x:n.x+n.w/2, y:n.y+n.h/2})}
             onJumpToNote={jumpToNote}
+            onSetReminder={()=>onSetReminder && onSetReminder(n.id)}
           />
         ))}
       </div>
@@ -1443,11 +1445,14 @@ function startPointerDrag(e, onMove, onEnd) {
 function StickyNote({note, T, tweaks, folder, refCb, selected, selectedIds, setSelectedIds, setNotes,
   bringGroupToFront,
   onFocus, onChange, onTogglePin, onDelete, onLinkClick, childFolders, onMoveToFolder, onMoveNotesToFolder, zoom=1,
-  allNotes=[], linksFor, onAddLink, onStartLink, onJumpToNote, onCopy, onSnapshot}) {
+  allNotes=[], linksFor, onAddLink, onStartLink, onJumpToNote, onCopy, onSnapshot, onSetReminder}) {
   const zRef = useRef(zoom); zRef.current = zoom;
   const [editing, setEditing] = useState(false);
   const [editingTitle, setEditingTitle] = useState(false);
   const [menu, setMenu] = useState(null);
+  // Normalized here rather than read raw, so a hand-edited notes.json can't
+  // put a NaN interval into the header badge or the context-menu label.
+  const reminder = normalizeReminder(note.reminder);
   const el = useRef(null);
 
   // Snapshot the title/body at the moment the user enters edit mode so that
@@ -1916,6 +1921,32 @@ function StickyNote({note, T, tweaks, folder, refCb, selected, selectedIds, setS
             {note.title || <span style={{opacity:.4}}>Untitled</span>}
           </div>
         )}
+        {reminder && reminder.enabled && (
+          // A reminder is invisible on the canvas otherwise, and "turn it off
+          // again" should never require hunting through a context menu. Same
+          // drag-vs-click guard as every other header button: without it the
+          // release of a note drag that started on the bell opens the dialog.
+          <button
+            onPointerDown={e=>{ btnDownRef.current = {x:e.clientX, y:e.clientY}; }}
+            onClick={e=>{
+              e.stopPropagation();
+              const d = btnDownRef.current;
+              btnDownRef.current = null;
+              if (d && Math.hypot(e.clientX - d.x, e.clientY - d.y) >= 6) {
+                e.preventDefault();
+                return;
+              }
+              onSetReminder && onSetReminder();
+            }}
+            title={`Reminder every ${reminder.everyMinutes} minute${reminder.everyMinutes>1?'s':''} — click to change`}
+            {...inkHoverProps(ink, 0.95)}
+            style={{...btnS(ink), opacity:0.95}}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.7 21a2 2 0 01-3.4 0"/>
+            </svg>
+          </button>
+        )}
         {(() => {
           // Badge count reflects all links on this note, including ones whose
           // other endpoint lives in another folder (pinned notes follow the
@@ -2211,6 +2242,12 @@ function StickyNote({note, T, tweaks, folder, refCb, selected, selectedIds, setS
             {label:'Edit body', onClick:()=>setEditing(true)},
             {label:'Insert image…', onClick:()=>insertImageFromPicker()},
             {label: note.pinned?'Unpin':'Pin to top', onClick:()=>{ if (onTogglePin) onTogglePin(); else onChange({pinned:!note.pinned}); }},
+            // Reminders need the OS notification service, which only the
+            // Electron build has — the web demo drops the item entirely
+            // (.filter(Boolean) below takes care of the null).
+            window.stickyAPI ? {label: reminder
+              ? `Reminder: every ${reminder.everyMinutes} min…`
+              : 'Set reminder…', onClick:()=>onSetReminder && onSetReminder()} : null,
             {divider:true},
             {label:'Link to note ▶', submenu: candidates.map(n => ({
               label: n.title || 'Untitled', dot: (NOTE_COLORS.find(c=>c.id===n.color)||{}).paper,
@@ -2364,6 +2401,84 @@ function ConfirmDialog({T, title, body, onCancel, onConfirm, confirmLabel='Delet
             onMouseEnter={e=>{ e.currentTarget.style.background = '#a32c2c'; }}
             onMouseLeave={e=>{ e.currentTarget.style.background = '#c33b3b'; }}
             style={{padding:'8px 14px', background:'#c33b3b', color:'#fff', border:'none', borderRadius:8, fontSize:13, fontWeight:600, cursor:'pointer', transition:'background .1s'}}>{confirmLabel}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+/* ==================================================================== */
+/* REMINDER DIALOG                                                       */
+/* ==================================================================== */
+/* Set or clear one note's repeating reminder. Presets cover what people
+ * actually pick; the number field is there for everything else. Electron-only
+ * — the context-menu item that opens this is hidden in the web demo.
+ */
+function ReminderDialog({T, note, onCancel, onSave, onTurnOff}) {
+  const existing = normalizeReminder(note && note.reminder);
+  // Kept as a string so the field can be emptied and retyped; every read goes
+  // through normalizeReminder, which is also what the store will see.
+  const [minutes, setMinutes] = useState(() => String(existing ? existing.everyMinutes : REMINDER_PRESETS[0]));
+  const raw = Math.round(Number(minutes));
+  const tooBig = Number.isFinite(raw) && raw > REMINDER_MAX_MINUTES;
+  const parsed = tooBig ? null : normalizeReminder({ everyMinutes: minutes });
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); onCancel(); }
+      else if (e.key === 'Enter' && parsed) { e.preventDefault(); onSave(parsed.everyMinutes); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
+
+  const btn = (extra) => ({
+    padding:'8px 14px', borderRadius:8, fontSize:13, cursor:'pointer',
+    transition:'background .1s', ...extra,
+  });
+
+  return (
+    <div onClick={onCancel}
+      style={{position:'fixed', inset:0, background:'rgba(10,14,20,.35)', zIndex:100000, display:'grid', placeItems:'center'}}>
+      <div onClick={(e)=>e.stopPropagation()}
+        style={{background:T.panelBg, color:T.panelText, borderRadius:12, border:`1px solid ${T.panelBorder}`, width:400, padding:22, boxShadow:'0 20px 60px rgba(0,0,0,.3)'}}>
+        <div style={{fontWeight:700, fontSize:16, marginBottom:6}}>Remind me about this note</div>
+        <div style={{fontSize:13, color:T.muted, lineHeight:1.5}}>
+          A desktop notification with this note's title and text, repeating at the interval below.
+          Reminders run while Sticky Notes is open.
+        </div>
+
+        <Label>Every</Label>
+        <Segmented T={T} value={String(raw)} onChange={v=>setMinutes(v)}
+          options={REMINDER_PRESETS.map(m => ({id:String(m), label: m<60 ? `${m}m` : `${m/60}h`}))}/>
+
+        <Label>Or a custom interval</Label>
+        <div style={{display:'flex', alignItems:'center', gap:8}}>
+          <input type="number" min={REMINDER_MIN_MINUTES} max={REMINDER_MAX_MINUTES} step="1"
+            value={minutes} onChange={e=>setMinutes(e.target.value)} autoFocus
+            style={{width:90, padding:'6px 8px', fontSize:13, borderRadius:6,
+              border:`1px solid ${T.panelBorder}`, background:'transparent', color:T.panelText, font:'inherit',
+              // The spinner arrows are drawn by the UA; without this they come
+              // out black-on-black on the terminal theme's dark panel.
+              colorScheme: isDarkSurface(T.panelBg) ? 'dark' : 'light'}}/>
+          <span style={{fontSize:12, color:T.muted}}>minutes</span>
+        </div>
+        <div style={{fontSize:11, color: parsed ? T.muted : '#c33b3b', marginTop:6, minHeight:15}}>
+          {parsed
+            ? (existing ? 'Saving restarts the countdown.' : '')
+            : (tooBig ? `At most ${REMINDER_MAX_MINUTES} minutes (one week).` : 'Enter a whole number of minutes, 1 or more.')}
+        </div>
+
+        <div style={{display:'flex', gap:8, alignItems:'center', marginTop:18}}>
+          {existing && (
+            <button onClick={onTurnOff} {...hoverProps(T)}
+              style={btn({background:'transparent', border:`1px solid ${T.panelBorder}`, color:T.panelText})}>Turn off</button>
+          )}
+          <div style={{flex:1}}/>
+          <button onClick={onCancel} {...hoverProps(T)}
+            style={btn({background:'transparent', border:`1px solid ${T.panelBorder}`, color:T.panelText})}>Cancel</button>
+          <button onClick={()=>parsed && onSave(parsed.everyMinutes)} disabled={!parsed}
+            style={btn({background: parsed ? T.accent : T.panelBorder, color:'#fff', border:'none',
+              fontWeight:600, cursor: parsed ? 'pointer' : 'not-allowed'})}>Save</button>
         </div>
       </div>
     </div>
@@ -3089,4 +3204,4 @@ function StatusBar({T, tweaks, folderName, noteCount, folderCount, onOpenPrefs})
   );
 }
 
-Object.assign(window, { AppGlyph, ColorDots, ConfirmDialog, ContextMenu, Desktop, EmptyState, FolderIcon, FolderTree, FoldersDrawer, HomeIcon, IMPORT_FROM_IMAGE_PROMPT, ImportFromImageDialog, InfoDialog, KeyHint, Label, Loading, MOBILE_BANNER_DISMISSED_KEY, MOBILE_BANNER_MAX_WIDTH, MobileDemoBanner, PanelAction, PasteErrorToast, Segmented, StatusBar, StickyNote, TopChrome, TweakPanel, UpdateBanner, btnS, kbdS, zBtn });
+Object.assign(window, { AppGlyph, ColorDots, ConfirmDialog, ContextMenu, Desktop, EmptyState, FolderIcon, FolderTree, FoldersDrawer, HomeIcon, IMPORT_FROM_IMAGE_PROMPT, ImportFromImageDialog, InfoDialog, KeyHint, Label, Loading, MOBILE_BANNER_DISMISSED_KEY, MOBILE_BANNER_MAX_WIDTH, MobileDemoBanner, PanelAction, PasteErrorToast, ReminderDialog, Segmented, StatusBar, StickyNote, TopChrome, TweakPanel, UpdateBanner, btnS, kbdS, zBtn });

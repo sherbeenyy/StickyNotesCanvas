@@ -328,4 +328,51 @@ function useUpdateCheck() {
   return { available, dismiss, info, closeInfo };
 }
 
-Object.assign(window, { usePersistedState, useStickyStore, useTweakMode, useUpdateCheck });
+/* ==================================================================== */
+/* PER-NOTE REMINDERS                                                    */
+/* ==================================================================== */
+/* Reminders only run while the app does — there is no tray and no background
+ * service — so a single interval in the renderer is the entire scheduler.
+ *
+ * All of the scheduling state lives in a ref, never in the store. That is
+ * deliberate: pushing a next-fire timestamp through setNotes would schedule a
+ * notes.json write and re-render the whole canvas every few minutes per active
+ * reminder, for information nobody needs to survive a restart. See
+ * reminderTick in utils.jsx for the maths and what the omissions mean.
+ */
+
+// 15s granularity. The shortest interval the dialog accepts is a minute, so a
+// reminder can drift by at most a tick, and the tick itself is a cheap scan.
+const REMINDER_TICK_MS = 15000;
+
+function useReminders(notes) {
+  // The interval must survive every note edit — recreating it would reset
+  // scheduleRef and re-anchor every cycle on each keystroke — so the notes
+  // reach it through a ref rather than the effect's dependency list. Same
+  // trick as storeRef in useStickyStore above.
+  const notesRef = useRef(notes);
+  notesRef.current = notes;
+  const scheduleRef = useRef({});
+
+  useEffect(() => {
+    // Web demo: no bridge, no OS notifications, nothing to schedule.
+    if (!window.stickyAPI?.notifyReminder) return;
+    const tick = () => {
+      const { next, due } = reminderTick(notesRef.current, scheduleRef.current, Date.now());
+      scheduleRef.current = next;
+      for (const id of due) {
+        const n = notesRef.current.find(x => x.id === id);
+        if (!n) continue;
+        window.stickyAPI.notifyReminder(reminderNotifyPayload(n))
+          .catch(err => console.warn('[reminder]', err));
+      }
+    };
+    // Anchor whatever is already set before the first interval elapses; with
+    // an empty scheduleRef this fires nothing, which is the contract.
+    tick();
+    const t = setInterval(tick, REMINDER_TICK_MS);
+    return () => clearInterval(t);
+  }, []);
+}
+
+Object.assign(window, { useReminders, usePersistedState, useStickyStore, useTweakMode, useUpdateCheck });

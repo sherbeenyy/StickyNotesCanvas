@@ -1052,6 +1052,91 @@ function withDefaults(raw) {
     folderOrder: Array.isArray(src.folderOrder) ? src.folderOrder : [],
   };
 }
+
+/* ---------- PER-NOTE REMINDERS ----------
+ * A note may carry one repeating reminder: { everyMinutes, enabled }. It
+ * lives ON THE NOTE, which is what makes "the reminder stops when the note is
+ * deleted" free — all four delete paths drop the note and the reminder with
+ * it, and nothing else has to be cleaned up.
+ *
+ * Nothing here records WHEN a reminder last fired. The next-fire time is held
+ * in a ref by useReminders (hooks.jsx) and never persisted, so firing costs no
+ * disk write and no re-render, and a relaunch simply starts every cycle over
+ * rather than delivering a backlog of missed notifications.
+ */
+const REMINDER_MIN_MINUTES = 1;
+const REMINDER_MAX_MINUTES = 7 * 24 * 60;   // a week; past that it isn't a reminder
+const REMINDER_PRESETS = [5, 15, 30, 60, 120];
+
+// A note's reminder as it comes off disk, out of a backup, or in from the
+// dialog — null when there isn't a usable one. Every reader goes through this,
+// so a hand-edited notes.json can't produce a zero-minute spin or a NaN
+// interval that would make the scheduler fire on every tick.
+function normalizeReminder(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const m = Math.round(Number(raw.everyMinutes));
+  if (!Number.isFinite(m) || m < REMINDER_MIN_MINUTES) return null;
+  return {
+    everyMinutes: Math.min(m, REMINDER_MAX_MINUTES),
+    enabled: raw.enabled !== false,
+  };
+}
+
+// One scheduler step, pure so the date maths is testable without a timer.
+// `prev` is { noteId: { everyMinutes, at } }; returns the map for the next
+// tick plus the note ids due to notify right now.
+//
+// A note that has no enabled reminder is simply never written into `next` —
+// that one omission is the whole cleanup story for deleted notes, deleted
+// reminders and switched-off reminders alike.
+function reminderTick(notes, prev, now) {
+  const next = {}, due = [];
+  const was = prev || {};
+  for (const n of notes || []) {
+    if (!n || typeof n.id !== 'string' || !n.id) continue;
+    const r = normalizeReminder(n.reminder);
+    if (!r || !r.enabled) continue;
+    const period = r.everyMinutes * 60000;
+    const prior = was[n.id];
+    if (!prior || prior.everyMinutes !== r.everyMinutes) {
+      // First sight of this reminder, or the user changed its interval: start
+      // a fresh cycle without firing. This is also the branch that runs for
+      // everything at app start (prev is empty), which is why relaunching the
+      // app never produces a burst of catch-up notifications.
+      next[n.id] = { everyMinutes: r.everyMinutes, at: now + period };
+    } else if (now >= prior.at) {
+      due.push(n.id);
+      // Re-anchored from NOW rather than prior.at + period: after the machine
+      // was suspended for three hours a 5-minute reminder must fire once, not
+      // thirty-six times.
+      next[n.id] = { everyMinutes: r.everyMinutes, at: now + period };
+    } else {
+      next[n.id] = prior;
+    }
+  }
+  return { next, due };
+}
+
+// What the OS notification actually shows for one note. The body goes through
+// markdownVisibleText — the same projection the caret mapping uses — so
+// heading hashes, list bullets, quote arrows and sticky-image:// references
+// never reach the notification as raw markdown. Blank-line runs collapse to
+// one and the result is capped: GNOME truncates a long body anyway, and this
+// payload crosses the IPC boundary on a timer.
+const REMINDER_BODY_MAX = 180;
+function reminderNotifyPayload(note) {
+  const n = note || {};
+  const visible = markdownVisibleText(typeof n.body === 'string' ? n.body : '').text;
+  let body = visible.replace(/[ \t]+$/gm, '').replace(/\n{2,}/g, '\n').trim();
+  if (body.length > REMINDER_BODY_MAX) {
+    body = body.slice(0, REMINDER_BODY_MAX - 1).trimEnd() + '…';
+  }
+  return {
+    noteId: n.id,
+    title: (typeof n.title === 'string' ? n.title : '').trim() || 'Sticky note',
+    body,
+  };
+}
 /* ---------- THEME TOKENS ---------- */
 function themeTokens(theme) {
   if (theme === 'terminal') {
@@ -1279,6 +1364,9 @@ function notesToClipboardText(notes, links, images) {
       id: n.id,  // preserved only for in-payload link endpoint mapping; remapped on paste
       title: n.title, body: n.body, color: n.color,
       w: n.w, h: n.h, pinned: !!n.pinned,
+      // `reminder` is deliberately absent: a pasted duplicate that starts
+      // notifying you on its own is a surprise, not a feature. Adding it here
+      // would "fix" nothing.
     })),
     links: subLinks.map(l => ({ from: l.from, to: l.to })),
   };
@@ -1385,4 +1473,4 @@ function downloadUrlForPlatform(version) {
 }
 const MOBILE_BANNER_DISMISSED_KEY = 'stickies.mobileBannerDismissed';
 const MOBILE_BANNER_MAX_WIDTH = 640;
-Object.assign(window, { CLIPBOARD_IMAGE_BYTES, FOLDER_HUES, HOVER_ALPHA, MOBILE_BANNER_DISMISSED_KEY, MOBILE_BANNER_MAX_WIDTH, NOTE_COLORS, SEED, STICKY_CLIPBOARD_MARKER, TWEAK_DEFAULTS, WHATS_NEW_ID, ZOOM_MAX, ZOOM_MIN, canMoveFolder, canvasPasteAction, clipboardImagesFor, clipboardTextToNotes, cmpSemver, downloadJSON, downloadNoteAsMarkdown, downloadUrlForPlatform, editLinkOnPaste, editListOnEnter, editListOnTab, editQuoteOnPaste, flattenFolderTree, flattenPreviewText, folderPath, folderSubtreeIds, hashRot, hasTextSelection, hexChannels, hoverBg, hoverInk, imageMimeForFile, imageRefsInNotes, isDarkSurface, markdownFileBody, markdownFileTitle, markdownFileToNote, markdownVisibleText, mdToHtml, mixHex, normHex, noteDownloadFilename, notesToClipboardText, noteToMarkdown, openWebLink, pickJSONFile, pickMarkdownFiles, renderedWordAt, sanitizeFolderParents, sourceCaretForPreviewClick, sourceOffsetForWord, themeTokens, uid, whatsNewInfo, withA, withDefaults, zoomActionForKey, zoomViewAt });
+Object.assign(window, { CLIPBOARD_IMAGE_BYTES, FOLDER_HUES, HOVER_ALPHA, MOBILE_BANNER_DISMISSED_KEY, MOBILE_BANNER_MAX_WIDTH, NOTE_COLORS, REMINDER_MAX_MINUTES, REMINDER_MIN_MINUTES, REMINDER_PRESETS, SEED, STICKY_CLIPBOARD_MARKER, TWEAK_DEFAULTS, WHATS_NEW_ID, ZOOM_MAX, ZOOM_MIN, canMoveFolder, canvasPasteAction, clipboardImagesFor, clipboardTextToNotes, cmpSemver, downloadJSON, downloadNoteAsMarkdown, downloadUrlForPlatform, editLinkOnPaste, editListOnEnter, editListOnTab, editQuoteOnPaste, flattenFolderTree, flattenPreviewText, folderPath, folderSubtreeIds, hashRot, hasTextSelection, hexChannels, hoverBg, hoverInk, imageMimeForFile, imageRefsInNotes, isDarkSurface, markdownFileBody, markdownFileTitle, markdownFileToNote, markdownVisibleText, mdToHtml, mixHex, normHex, normalizeReminder, noteDownloadFilename, notesToClipboardText, noteToMarkdown, openWebLink, pickJSONFile, pickMarkdownFiles, reminderNotifyPayload, reminderTick, renderedWordAt, sanitizeFolderParents, sourceCaretForPreviewClick, sourceOffsetForWord, themeTokens, uid, whatsNewInfo, withA, withDefaults, zoomActionForKey, zoomViewAt });

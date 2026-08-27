@@ -30,13 +30,14 @@
       <li>Import notes from a photo using your own AI — snap your physical sticky notes and paste them straight onto the canvas</li>
       <li>Right-to-left language support, so notes in Arabic, Hebrew, or Persian read naturally</li>
       <li>Pinned notes that follow you into every folder</li>
+      <li>Per-note repeating reminders, delivered as ordinary desktop notifications while the app is open</li>
       <li>Plain JSON storage you can read with cat, sync with rsync, or version with git</li>
       <li>Import and export your notes as JSON</li>
       <li>Keyboard shortcuts for the common actions, drag-and-drop for everything else</li>
     </ul>
     <p>
-      What it does not do: cloud sync, real-time collaboration, push notifications,
-      or AI-generated insights. These are sticky notes.
+      What it does not do: cloud sync, real-time collaboration, or AI-generated
+      insights. These are sticky notes.
     </p>
   </description>
 

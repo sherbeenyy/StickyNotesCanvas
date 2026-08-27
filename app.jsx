@@ -86,6 +86,9 @@ function AppInner({ store, setKey, exportNow, importNow, takeSnapshot, undo, red
     return () => clearTimeout(t);
   }, [pasteError]);
   const [confirmDel, setConfirmDel] = useState(null);
+  // Note id whose reminder dialog is open, mirroring the confirmDel idiom
+  // above — set from deep in the tree through a prop callback.
+  const [reminderFor, setReminderFor] = useState(null);
   const [renamingFolder, setRenamingFolder] = useState(null);
   const zRef = useRef(10);
 
@@ -559,6 +562,21 @@ function AppInner({ store, setKey, exportNow, importNow, takeSnapshot, undo, red
     setTimeout(()=>focusNote(id), 50);
   };
 
+  // Per-note reminders. The hook owns the whole schedule (hooks.jsx); all that
+  // is needed here is the current notes.
+  useReminders(notes);
+
+  // Clicking a reminder notification raises the window and lands on the note
+  // it was about. jumpToNote is rebuilt every render, so it reaches the
+  // listener through a ref — otherwise this would re-subscribe constantly.
+  const jumpRef = useRef(jumpToNote);
+  jumpRef.current = jumpToNote;
+  useEffect(() => {
+    if (!window.stickyAPI?.onReminderOpen) return;
+    const off = window.stickyAPI.onReminderOpen((id) => jumpRef.current(id));
+    return () => off && off();
+  }, []);
+
   /* ----- link lines (computed in WORLD space from note positions) ----- */
   const noteRefs = useRef({});
   const linkLines = useMemo(() => {
@@ -724,6 +742,7 @@ function AppInner({ store, setKey, exportNow, importNow, takeSnapshot, undo, red
         onCreateNote={createNote}
         onImportMarkdown={importMarkdown}
         onCopyNotes={copySelected}
+        onSetReminder={(id)=>setReminderFor(id)}
         view={store.view}
         setView={(v) => setKey('view', v)}
         drawerOpen={store.drawer}
@@ -748,6 +767,19 @@ function AppInner({ store, setKey, exportNow, importNow, takeSnapshot, undo, red
           }}
         />
       )}
+
+      {reminderFor && (() => {
+        const n = notes.find(x => x.id===reminderFor);
+        if (!n) return null;
+        // Both save paths go through takeSnapshot + updateNote, so setting or
+        // clearing a reminder undoes with Ctrl+Z like any other note edit.
+        const set = (reminder) => { takeSnapshot(); updateNote(n.id, {reminder}); setReminderFor(null); };
+        return <ReminderDialog T={T} note={n}
+          onCancel={()=>setReminderFor(null)}
+          onSave={(everyMinutes)=>set({everyMinutes, enabled:true})}
+          onTurnOff={()=>set(undefined)}
+        />;
+      })()}
 
       {(tweakActive || prefsOpen) && <TweakPanel T={T} tweaks={tweaks} update={updateTweak} onClose={()=>setPrefsOpen(false)} onImportFromImage={onImportFromImage}/>}
 

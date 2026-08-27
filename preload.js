@@ -65,6 +65,17 @@ contextBridge.exposeInMainWorld('stickyAPI', {
   isFlatpak: !!process.env.FLATPAK_ID,
   // Open https URLs in the user's default browser. Used by the update banner.
   openExternal: (url) => ipcRenderer.invoke('shell:open-external', url),
+  // Ask the OS to show a note's reminder. payload = { noteId, title, body },
+  // built by reminderNotifyPayload; main re-validates and caps everything.
+  notifyReminder: (payload) => ipcRenderer.invoke('reminder:notify', payload),
+  // Clicking a reminder notification raises the window; this delivers the note
+  // id so the renderer can jump to it. Same unsubscribe contract as the menu
+  // listeners below.
+  onReminderOpen: (cb) => {
+    const wrapped = (_event, id) => cb(id);
+    ipcRenderer.on('reminder:open', wrapped);
+    return () => ipcRenderer.removeListener('reminder:open', wrapped);
+  },
   onMenuCheckUpdates: (cb) => {
     const wrapped = () => cb();
     ipcRenderer.on('menu:checkUpdates', wrapped);
