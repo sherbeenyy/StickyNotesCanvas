@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #1a1a18; } a:hover { color: #6b6a65; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+<div style="width: 900px; height: 620px; background: #f4f3f0; padding: 32px; display: flex; gap: 32px; color: #1a1a18;">
+
+  <!-- PREFERENCES -->
+  <div style="width: 280px; flex: none; background: #faf9f7; border: 1px solid #d6d3cc; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 4px; height: fit-content;">
+    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+      <div style="flex-grow: 1; font-size: 13px; font-weight: 600;">Preferences</div>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8b8a84" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </div>
+
+    <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: #a5a49e; margin: 10px 0 6px;">Theme</div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px;">
+      <div style="height: 28px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #1a1a18; border-radius: 4px; font-weight: 500;">Light</div>
+      <div style="height: 28px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">Dark</div>
+      <div style="height: 28px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">Mono</div>
+      <div style="height: 28px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">Tokyo</div>
+      <div style="height: 28px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">Nord</div>
+      <div style="height: 28px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">Dracula</div>
+    </div>
+
+    <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: #a5a49e; margin: 14px 0 6px;">Note text</div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px;">
+      <div style="height: 28px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #1a1a18; border-radius: 4px; font-weight: 500;">Serif</div>
+      <div style="height: 28px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">Sans</div>
+      <div style="height: 28px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">Mono</div>
+    </div>
+
+    <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: #a5a49e; margin: 14px 0 6px;">Density</div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px;">
+      <div style="height: 28px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">Compact</div>
+      <div style="height: 28px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #1a1a18; border-radius: 4px; font-weight: 500;">Cozy</div>
+      <div style="height: 28px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">Roomy</div>
+    </div>
+
+    <div style="height: 1px; background: #eeece7; margin: 16px 0 12px;"></div>
+    <div style="display: flex; flex-direction: column; gap: 11px;">
+      <div style="display: flex; align-items: center; gap: 9px;">
+        <div style="width: 15px; height: 15px; flex: none; border: 1px solid #1a1a18; border-radius: 3px; background: #1a1a18; display: grid; place-items: center;">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#faf9f7" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l6 6L20 6"/></svg>
+        </div>
+        <div style="font-size: 12px;">Show link arrows</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 9px;">
+        <div style="width: 15px; height: 15px; flex: none; border: 1px solid #cdcac2; border-radius: 3px;"></div>
+        <div style="font-size: 12px; color: #33322e;">Hide note titles</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 9px;">
+        <div style="width: 15px; height: 15px; flex: none; border: 1px solid #cdcac2; border-radius: 3px;"></div>
+        <div style="font-size: 12px; color: #33322e;">Always show menu bar</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIALOG -->
+  <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 10px;">
+    <div style="font-size: 11px; color: #8b8a84;">Dialog — on a plain scrim, square-ish, one dark primary</div>
+    <div style="flex-grow: 1; background: #e8e6e1; border-radius: 6px; display: grid; place-items: center; padding: 20px;">
+      <div style="width: 400px; background: #faf9f7; border: 1px solid #d6d3cc; border-radius: 8px; padding: 22px;">
+        <div style="font-size: 15px; font-weight: 600; margin-bottom: 7px; letter-spacing: -0.01em;">Remind me about this note</div>
+        <div style="font-size: 12.5px; color: #6b6a65; line-height: 1.55;">A desktop notification with this note's title and text, repeating at the interval below.</div>
+
+        <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: #a5a49e; margin: 18px 0 7px;">Every</div>
+        <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px;">
+          <div style="height: 30px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">5m</div>
+          <div style="height: 30px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #1a1a18; border-radius: 4px; font-weight: 500;">15m</div>
+          <div style="height: 30px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">30m</div>
+          <div style="height: 30px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">1h</div>
+          <div style="height: 30px; display: grid; place-items: center; font-size: 11.5px; border: 1px solid #e4e2dd; border-radius: 4px; color: #6b6a65;">2h</div>
+        </div>
+
+        <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: #a5a49e; margin: 16px 0 7px;">Or a custom interval</div>
+        <div style="display: flex; align-items: center; gap: 9px;">
+          <div style="width: 84px; height: 32px; border: 1px solid #d6d3cc; border-radius: 5px; background: #ffffff; display: flex; align-items: center; padding: 0 10px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px;">15</div>
+          <div style="font-size: 12px; color: #6b6a65;">minutes</div>
+        </div>
+        <div style="font-size: 11px; color: #8b8a84; margin-top: 8px;">Saving restarts the countdown.</div>
+
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 20px;">
+          <div style="height: 32px; padding: 0 13px; display: grid; place-items: center; border: 1px solid #d6d3cc; border-radius: 5px; font-size: 12.5px;">Turn off</div>
+          <div style="flex-grow: 1;"></div>
+          <div style="height: 32px; padding: 0 13px; display: grid; place-items: center; border: 1px solid #d6d3cc; border-radius: 5px; font-size: 12.5px;">Cancel</div>
+          <div style="height: 32px; padding: 0 15px; display: grid; place-items: center; background: #1a1a18; color: #faf9f7; border-radius: 5px; font-size: 12.5px; font-weight: 500;">Save</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

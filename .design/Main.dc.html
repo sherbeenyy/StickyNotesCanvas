@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #1a1a18; } a:hover { color: #6b6a65; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+<div style="width: 1280px; height: 800px; background: #f4f3f0; display: flex; flex-direction: column; color: #1a1a18;">
+
+  <!-- TOP CHROME — 54px, hairline, no filled pills -->
+  <div style="height: 54px; flex: none; display: flex; align-items: center; gap: 20px; padding: 0 18px; background: #faf9f7; border-bottom: 1px solid #e4e2dd;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 18px; height: 18px; border: 1.5px solid #1a1a18; border-radius: 2px;"></div>
+      <div style="font-size: 14px; font-weight: 600; letter-spacing: -0.01em;">Sticky Notes</div>
+    </div>
+    <div style="width: 1px; height: 20px; background: #e4e2dd;"></div>
+    <div style="font-size: 13px; color: #6b6a65;">All notes</div>
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 8px; width: 220px; height: 30px; padding: 0 10px; border: 1px solid #d6d3cc; border-radius: 6px; background: #ffffff;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8b8a84" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <div style="font-size: 12.5px; color: #8b8a84;">Search</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: 1px solid #d6d3cc; border-radius: 6px; font-size: 12.5px; font-weight: 500;">
+      Backup
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1a1a18" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; min-height: 0;">
+
+    <!-- CANVAS -->
+    <div style="flex-grow: 1; position: relative; background: #f4f3f0;">
+
+      <!-- dashed link between two notes -->
+      <svg style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none;">
+        <path d="M356 152 L432 172" stroke="#b8b5ad" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/>
+        <circle cx="356" cy="152" r="2.5" fill="#b8b5ad"/>
+        <path d="M432 172 l-7 -3 l0 6 z" fill="#b8b5ad"/>
+      </svg>
+
+      <!-- note: yellow -->
+      <div style="position: absolute; left: 56px; top: 44px; width: 300px; height: 216px; background: #f5e9bf; border: 1px solid #e0d29b; border-radius: 3px; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="height: 32px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 11px; border-bottom: 1px solid #e5d8a8;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#7a6a2e" stroke-width="2" stroke-linecap="round"><path d="M12 17v5"/><path d="M9 2h6l-1 8 4 3H6l4-3z"/></svg>
+          <div style="flex-grow: 1; font-size: 12px; font-weight: 600; color: #4a4123; letter-spacing: -0.005em;">Sprint 42</div>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#7a6a2e" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 10-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 107 7l1-1"/></svg>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#7a6a2e" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </div>
+        <div style="flex-grow: 1; padding: 11px 13px; font-family: Newsreader, Georgia, serif; font-size: 15px; line-height: 1.5; color: #3d3620;">
+          <div style="font-weight: 500; font-size: 16.5px; margin-bottom: 5px;">This sprint</div>
+          <div>— onboarding polish</div>
+          <div>— dnd quick fix</div>
+          <div>— dogfood search</div>
+        </div>
+        <div style="height: 26px; flex: none; display: flex; align-items: center; gap: 5px; padding: 0 11px; border-top: 1px solid #e5d8a8;">
+          <div style="flex-grow: 1;"></div>
+          <div style="width: 9px; height: 9px; border-radius: 50%; background: #e8a9a2;"></div>
+          <div style="width: 9px; height: 9px; border-radius: 50%; background: #a9c6e0;"></div>
+          <div style="width: 9px; height: 9px; border-radius: 50%; background: #b6cfa8;"></div>
+          <div style="width: 9px; height: 9px; border-radius: 50%; background: #edd89a; box-shadow: 0 0 0 1.5px #4a4123;"></div>
+          <div style="width: 9px; height: 9px; border-radius: 50%; background: #d3c3e6;"></div>
+        </div>
+      </div>
+
+      <!-- note: blue -->
+      <div style="position: absolute; left: 432px; top: 118px; width: 268px; height: 178px; background: #d3e3f0; border: 1px solid #b3cbdf; border-radius: 3px; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="height: 32px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 11px; border-bottom: 1px solid #bcd2e3;">
+          <div style="flex-grow: 1; font-size: 12px; font-weight: 600; color: #1f3a52;">Kernel notes</div>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#3d6285" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </div>
+        <div style="flex-grow: 1; padding: 11px 13px; font-family: Newsreader, Georgia, serif; font-size: 15px; line-height: 1.5; color: #1f3a52;">
+          check scheduler patch<br>rerun <span style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: #c2d8e8; padding: 1px 4px; border-radius: 2px;">make menuconfig</span>
+        </div>
+        <div style="height: 26px; flex: none; border-top: 1px solid #bcd2e3;"></div>
+      </div>
+
+      <!-- note: plain white with reminder bell -->
+      <div style="position: absolute; left: 760px; top: 60px; width: 268px; height: 168px; background: #fcfcfa; border: 1px solid #ddd9d1; border-radius: 3px; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="height: 32px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 11px; border-bottom: 1px solid #e6e2da;">
+          <div style="flex-grow: 1; font-size: 12px; font-weight: 600; color: #1a1a18;">Take pills</div>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1a1a18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1a1a18" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </div>
+        <div style="flex-grow: 1; padding: 11px 13px; font-family: Newsreader, Georgia, serif; font-size: 15px; line-height: 1.5; color: #33322e;">
+          the blue one, with water
+        </div>
+        <div style="height: 26px; flex: none; border-top: 1px solid #e6e2da;"></div>
+      </div>
+
+      <!-- zoom controls, bottom-left: hairline, no pills -->
+      <div style="position: absolute; left: 18px; bottom: 18px; display: flex; align-items: center; background: #faf9f7; border: 1px solid #d6d3cc; border-radius: 6px; overflow: hidden;">
+        <div style="width: 30px; height: 28px; display: grid; place-items: center; font-size: 14px; color: #4a4944;">−</div>
+        <div style="width: 1px; height: 16px; background: #e4e2dd;"></div>
+        <div style="padding: 0 11px; height: 28px; display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #4a4944;">100%</div>
+        <div style="width: 1px; height: 16px; background: #e4e2dd;"></div>
+        <div style="width: 30px; height: 28px; display: grid; place-items: center; font-size: 14px; color: #4a4944;">+</div>
+        <div style="width: 1px; height: 16px; background: #e4e2dd;"></div>
+        <div style="padding: 0 10px; height: 28px; display: grid; place-items: center; font-size: 11px; color: #4a4944;">Fit</div>
+      </div>
+    </div>
+
+    <!-- FOLDERS DRAWER — 220px, NO left colour bars -->
+    <div style="width: 220px; flex: none; background: #faf9f7; border-left: 1px solid #e4e2dd; display: flex; flex-direction: column;">
+      <div style="height: 40px; flex: none; display: flex; align-items: center; padding: 0 14px; border-bottom: 1px solid #eeece7;">
+        <div style="flex-grow: 1; font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8b8a84;">Folders</div>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b6a65" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </div>
+      <div style="flex-grow: 1; padding: 8px 8px; display: flex; flex-direction: column; gap: 1px;">
+        <div style="display: flex; align-items: baseline; gap: 9px; padding: 7px 8px; border-radius: 4px; background: #ebe9e4;">
+          <div style="flex-grow: 1; font-size: 12.5px; font-weight: 600;">All notes</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #8b8a84;">12</div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 9px; padding: 7px 8px; border-radius: 4px;">
+          <div style="flex-grow: 1; font-size: 12.5px; color: #33322e;">Work</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #a5a49e;">5</div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 9px; padding: 7px 8px 7px 20px; border-radius: 4px;">
+          <div style="flex-grow: 1; font-size: 12.5px; color: #33322e;">Sprints</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #a5a49e;">3</div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 9px; padding: 7px 8px 7px 20px; border-radius: 4px;">
+          <div style="flex-grow: 1; font-size: 12.5px; color: #33322e;">Reviews</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #a5a49e;">2</div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 9px; padding: 7px 8px; border-radius: 4px;">
+          <div style="flex-grow: 1; font-size: 12.5px; color: #33322e;">Home</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #a5a49e;">4</div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 9px; padding: 7px 8px; border-radius: 4px;">
+          <div style="flex-grow: 1; font-size: 12.5px; color: #33322e;">Personal</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #a5a49e;">3</div>
+        </div>
+      </div>
+      <div style="flex: none; padding: 10px; border-top: 1px solid #eeece7;">
+        <div style="height: 32px; display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #1a1a18; border-radius: 5px; font-size: 12.5px; font-weight: 500;">
+          New note
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #8b8a84; border: 1px solid #d6d3cc; border-radius: 3px; padding: 1px 4px;">N</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR — 28px -->
+  <div style="height: 28px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 16px; background: #faf9f7; border-top: 1px solid #e4e2dd; font-size: 11px; color: #8b8a84;">
+    <div>All notes</div>
+    <div style="color: #d6d3cc;">·</div>
+    <div>12 notes</div>
+    <div style="color: #d6d3cc;">·</div>
+    <div>5 folders</div>
+    <div style="flex-grow: 1;"></div>
+    <div>Preferences</div>
+    <div style="color: #d6d3cc;">·</div>
+    <div>Saved</div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #1a1a18; } a:hover { color: #6b6a65; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+<div style="width: 720px; height: 560px; background: #f4f3f0; padding: 32px; display: flex; gap: 36px; color: #1a1a18;">
+
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #a5a49e;">Today</div>
+    <div style="width: 240px; flex-grow: 1; background: #f3ead7; border: 1px solid #d8cfbc; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+      <div style="font-size: 12px; font-weight: 700; color: #2a241a; margin-bottom: 4px;">Folders</div>
+      <div style="display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 8px; background: #e8dcc2; border-left: 3px solid #5a82c9;">
+        <div style="width: 15px; height: 13px; background: #5a82c9; border-radius: 2px;"></div>
+        <div style="flex-grow: 1; font-size: 12.5px; font-weight: 700; color: #2a241a;">All notes</div>
+        <div style="font-size: 10.5px; color: #7a6f5b;">12</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 8px; border-left: 3px solid #d97757;">
+        <div style="width: 15px; height: 13px; background: #d97757; border-radius: 2px;"></div>
+        <div style="flex-grow: 1; font-size: 12.5px; color: #2a241a;">Work</div>
+        <div style="font-size: 10.5px; color: #7a6f5b;">5</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 8px; border-left: 3px solid #4c9e6b;">
+        <div style="width: 15px; height: 13px; background: #4c9e6b; border-radius: 2px;"></div>
+        <div style="flex-grow: 1; font-size: 12.5px; color: #2a241a;">Home</div>
+        <div style="font-size: 10.5px; color: #7a6f5b;">4</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 8px; border-left: 3px solid #8a6fbf;">
+        <div style="width: 15px; height: 13px; background: #8a6fbf; border-radius: 2px;"></div>
+        <div style="flex-grow: 1; font-size: 12.5px; color: #2a241a;">Personal</div>
+        <div style="font-size: 10.5px; color: #7a6f5b;">3</div>
+      </div>
+      <div style="flex-grow: 1;"></div>
+      <div style="height: 34px; display: grid; place-items: center; background: #b8621b; color: #fff; border-radius: 999px; font-size: 12px; font-weight: 700;">+ new sticky</div>
+    </div>
+    <div style="width: 240px; font-size: 11.5px; color: #8b8a84; line-height: 1.5;">Three colour signals per row — bar, chip, and fill — plus a pill button and 12px radii.</div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #1a1a18;">Proposed</div>
+    <div style="width: 240px; flex-grow: 1; background: #faf9f7; border: 1px solid #d6d3cc; border-radius: 6px; display: flex; flex-direction: column;">
+      <div style="height: 38px; flex: none; display: flex; align-items: center; padding: 0 13px; border-bottom: 1px solid #eeece7;">
+        <div style="flex-grow: 1; font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8b8a84;">Folders</div>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b6a65" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </div>
+      <div style="flex-grow: 1; padding: 7px; display: flex; flex-direction: column; gap: 1px;">
+        <div style="display: flex; align-items: baseline; gap: 9px; padding: 7px 8px; border-radius: 4px; background: #ebe9e4;">
+          <div style="flex-grow: 1; font-size: 12.5px; font-weight: 600;">All notes</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #8b8a84;">12</div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 9px; padding: 7px 8px; border-radius: 4px;">
+          <div style="flex-grow: 1; font-size: 12.5px; color: #33322e;">Work</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #a5a49e;">5</div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 9px; padding: 7px 8px 7px 20px; border-radius: 4px;">
+          <div style="flex-grow: 1; font-size: 12.5px; color: #33322e;">Sprints</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #a5a49e;">3</div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 9px; padding: 7px 8px; border-radius: 4px;">
+          <div style="flex-grow: 1; font-size: 12.5px; color: #33322e;">Home</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #a5a49e;">4</div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 9px; padding: 7px 8px; border-radius: 4px;">
+          <div style="flex-grow: 1; font-size: 12.5px; color: #33322e;">Personal</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #a5a49e;">3</div>
+        </div>
+      </div>
+      <div style="flex: none; padding: 9px; border-top: 1px solid #eeece7;">
+        <div style="height: 32px; display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #1a1a18; border-radius: 5px; font-size: 12.5px; font-weight: 500;">
+          New note
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #8b8a84; border: 1px solid #d6d3cc; border-radius: 3px; padding: 1px 4px;">N</span>
+        </div>
+      </div>
+    </div>
+    <div style="width: 240px; font-size: 11.5px; color: #8b8a84; line-height: 1.5;">Name and count, nothing else. Nesting reads as indent. Selection is a quiet fill, not a bar.</div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

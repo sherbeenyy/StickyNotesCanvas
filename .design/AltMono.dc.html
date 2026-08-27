@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #1a1a18; } a:hover { color: #6b6a65; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+<div style="width: 1280px; height: 800px; background: #17171a; display: flex; flex-direction: column; color: #e8e6e1;">
+  <div style="height: 46px; flex: none; display: flex; align-items: center; gap: 18px; padding: 0 16px; border-bottom: 1px solid #2a2a2e;">
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.02em;">stickies</div>
+    <div style="width: 1px; height: 16px; background: #2a2a2e;"></div>
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #85838c;">~/all</div>
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 8px; width: 220px; height: 26px; padding: 0 9px; border: 1px solid #2f2f34; border-radius: 3px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #5f5e66;">/ search</div>
+    </div>
+    <div style="height: 26px; padding: 0 10px; display: grid; place-items: center; border: 1px solid #2f2f34; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px;">backup</div>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; min-height: 0;">
+    <div style="flex-grow: 1; position: relative;">
+      <div style="position: absolute; left: 48px; top: 40px; width: 296px; height: 200px; background: #1e1e22; border: 1px solid #34343a; border-radius: 3px; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="height: 30px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 11px; border-bottom: 1px solid #2a2a2e;">
+          <div style="width: 7px; height: 7px; border-radius: 50%; background: #d8c26a;"></div>
+          <div style="flex-grow: 1; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #e8e6e1;">sprint-42</div>
+        </div>
+        <div style="flex-grow: 1; padding: 11px 13px; font-size: 13.5px; line-height: 1.55; color: #c7c5cd;">
+          <div style="font-weight: 600; color: #e8e6e1; margin-bottom: 4px;">This sprint</div>
+          <div>— onboarding polish</div>
+          <div>— dnd quick fix</div>
+        </div>
+      </div>
+      <div style="position: absolute; left: 400px; top: 108px; width: 264px; height: 170px; background: #1e1e22; border: 1px solid #34343a; border-radius: 3px; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="height: 30px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 11px; border-bottom: 1px solid #2a2a2e;">
+          <div style="width: 7px; height: 7px; border-radius: 50%; background: #6f9fd8;"></div>
+          <div style="flex-grow: 1; font-family: 'JetBrains Mono', monospace; font-size: 11.5px;">kernel-notes</div>
+        </div>
+        <div style="flex-grow: 1; padding: 11px 13px; font-size: 13.5px; line-height: 1.55; color: #c7c5cd;">check scheduler patch</div>
+      </div>
+      <div style="position: absolute; left: 18px; bottom: 16px; display: flex; border: 1px solid #2f2f34; border-radius: 3px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #85838c;">
+        <div style="width: 28px; height: 26px; display: grid; place-items: center;">−</div>
+        <div style="padding: 0 10px; height: 26px; display: grid; place-items: center; border-left: 1px solid #2f2f34; border-right: 1px solid #2f2f34;">100%</div>
+        <div style="width: 28px; height: 26px; display: grid; place-items: center;">+</div>
+      </div>
+    </div>
+    <div style="width: 210px; flex: none; border-left: 1px solid #2a2a2e; padding: 10px 8px; display: flex; flex-direction: column; gap: 1px; font-family: 'JetBrains Mono', monospace;">
+      <div style="font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase; color: #5f5e66; padding: 6px 8px 10px;">folders</div>
+      <div style="display: flex; gap: 8px; padding: 6px 8px; border-radius: 3px; background: #24242a;"><div style="flex-grow: 1; font-size: 11.5px;">all</div><div style="font-size: 10.5px; color: #85838c;">12</div></div>
+      <div style="display: flex; gap: 8px; padding: 6px 8px;"><div style="flex-grow: 1; font-size: 11.5px; color: #c7c5cd;">work</div><div style="font-size: 10.5px; color: #5f5e66;">5</div></div>
+      <div style="display: flex; gap: 8px; padding: 6px 8px 6px 20px;"><div style="flex-grow: 1; font-size: 11.5px; color: #c7c5cd;">sprints</div><div style="font-size: 10.5px; color: #5f5e66;">3</div></div>
+      <div style="display: flex; gap: 8px; padding: 6px 8px;"><div style="flex-grow: 1; font-size: 11.5px; color: #c7c5cd;">home</div><div style="font-size: 10.5px; color: #5f5e66;">4</div></div>
+    </div>
+  </div>
+
+  <div style="height: 26px; flex: none; display: flex; align-items: center; gap: 14px; padding: 0 14px; border-top: 1px solid #2a2a2e; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #5f5e66;">
+    <div>all · 12 notes · 5 folders</div>
+    <div style="flex-grow: 1;"></div>
+    <div>saved</div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

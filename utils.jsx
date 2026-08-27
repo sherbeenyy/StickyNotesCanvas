@@ -3,7 +3,7 @@ const { useState, useEffect, useRef, useMemo, useCallback, Fragment } = React;
 /* ---------- TWEAKABLE DEFAULTS ---------- */
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "theme": "paper",
-  "font": "Inter",
+  "font": "Source Serif 4",
   "density": "cozy",
   "showLinks": true,
   "tilt": true,
@@ -12,14 +12,14 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 
 /* ---------- COLOR PALETTES ---------- */
 const NOTE_COLORS = [
-  { id: "red",    name: "Red",     paper: "#f8a6a0", flat: "#ffc2bd", term: "#f8a6a0", ink: "#3a1410" },
-  { id: "pink",   name: "Pink",    paper: "#f8c6d4", flat: "#ffd5e0", term: "#f8c6d4", ink: "#3a1220" },
-  { id: "blue",   name: "Blue",    paper: "#b6dbf5", flat: "#cfe6f9", term: "#b6dbf5", ink: "#0f2b44" },
-  { id: "green",  name: "Green",   paper: "#c7e7b8", flat: "#d5edc8", term: "#c7e7b8", ink: "#143318" },
-  { id: "yellow", name: "Yellow",  paper: "#fde8a1", flat: "#fff4c2", term: "#fde8a1", ink: "#3a2f12" },
-  { id: "peach",  name: "Peach",   paper: "#fbd0b5", flat: "#ffddc6", term: "#fbd0b5", ink: "#3a1a08" },
-  { id: "lilac",  name: "Lilac",   paper: "#d9c6f0", flat: "#e1d2f5", term: "#d9c6f0", ink: "#2a174a" },
-  { id: "white",  name: "Paper",   paper: "#fafaf4", flat: "#ffffff", term: "#fafaf4", ink: "#222" },
+  { id: "red",    name: "Red",     paper: "#eec5c0", flat: "#ffc2bd", term: "#f8a6a0", ink: "#3a1410" },
+  { id: "pink",   name: "Pink",    paper: "#f0cdd8", flat: "#ffd5e0", term: "#f8c6d4", ink: "#3a1220" },
+  { id: "blue",   name: "Blue",    paper: "#d3e3f0", flat: "#cfe6f9", term: "#b6dbf5", ink: "#0f2b44" },
+  { id: "green",  name: "Green",   paper: "#d5e5c8", flat: "#d5edc8", term: "#c7e7b8", ink: "#143318" },
+  { id: "yellow", name: "Yellow",  paper: "#f5e9bf", flat: "#fff4c2", term: "#fde8a1", ink: "#3a2f12" },
+  { id: "peach",  name: "Peach",   paper: "#f3d9c4", flat: "#ffddc6", term: "#fbd0b5", ink: "#3a1a08" },
+  { id: "lilac",  name: "Lilac",   paper: "#ded1ef", flat: "#e1d2f5", term: "#d9c6f0", ink: "#2a174a" },
+  { id: "white",  name: "Paper",   paper: "#fcfcfa", flat: "#ffffff", term: "#fafaf4", ink: "#222" },
 ];
 
 const FOLDER_HUES = ["#d97757","#5a82c9","#8a6fbf","#4c9e6b","#c4843a","#b84a6b","#3fa89a","#8a8f3d"];
@@ -1155,7 +1155,7 @@ function reminderNotifyPayload(note) {
  * code paths as `flat`, which is the well-trodden one.
  */
 const THEME_BASE = {
-  dark: true, sharp: false, washi: false, tiltable: false,
+  dark: true, sharp: false, washi: false, tiltable: false, folderHue: true,
   noteKey: 'term', onAccent: '#fff', noteFontSize: 13.5, noteLineHeight: 1.5,
   noteShadow: '0 1px 2px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.35)',
   noteRadius: '8px',
@@ -1163,16 +1163,19 @@ const THEME_BASE = {
 };
 
 const THEMES = {
+  // Light: the chrome carries no colour at all — the notes do. Accent is ink,
+  // so a selected row or a primary button is black-on-white rather than a
+  // tinted pill. Flat ground, hairline borders, small radii.
   paper: {
-    dark: false, washi: true, tiltable: true, noteKey: 'paper',
-    noteFontSize: 18, noteLineHeight: 1.35,
-    wallpaper: "linear-gradient(180deg,#efe8dc 0%, #e5dbc8 100%)",
-    panelBg: '#fbf7ef', panelBorder: '#d8cfbc', panelText: '#2a241a',
-    accent: '#b8621b', muted: '#7a6f5b', hairline: '#e6dfce',
-    noteShadow: '0 2px 0 rgba(60,40,20,.05), 0 10px 28px rgba(60,40,20,.14), inset 0 0 0 1px rgba(0,0,0,.04)',
-    noteRadius: '2px',
-    bodyFont: 'Caveat, "Segoe Script", cursive',
-    folderBg: '#f3ead7', folderBorder: '#d8cfbc',
+    dark: false, noteKey: 'paper', folderHue: false,
+    noteFontSize: 15, noteLineHeight: 1.5,
+    wallpaper: '#f2f2f1',
+    panelBg: '#ffffff', panelBorder: '#dcdbd8', panelText: '#141413',
+    accent: '#141413', onAccent: '#ffffff', muted: '#767572', hairline: '#ebeae7',
+    noteShadow: 'inset 0 0 0 1px rgba(0,0,0,.11)',
+    noteRadius: '3px',
+    bodyFont: '"Source Serif 4", Georgia, serif',
+    folderBg: '#f7f6f5', folderBorder: '#dcdbd8',
   },
   flat: {
     dark: false, noteKey: 'flat',
@@ -1216,7 +1219,7 @@ const THEMES = {
 
 // Ordered for the Preferences picker; also the list withDefaults validates against.
 const THEME_IDS = Object.keys(THEMES);
-const THEME_LABELS = { paper:'Paper', flat:'Flat', terminal:'Terminal', tokyo:'Tokyo', nord:'Nord', dracula:'Dracula' };
+const THEME_LABELS = { paper:'Light', flat:'Flat', terminal:'Terminal', tokyo:'Tokyo', nord:'Nord', dracula:'Dracula' };
 
 // Unknown ids fall back to paper rather than returning undefined tokens — a
 // store written by a newer build (or hand-edited) must still render.

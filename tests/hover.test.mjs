@@ -95,11 +95,20 @@ for (const theme of THEMES) {
 
   test(`hover on ${theme} keeps the theme's own accent character`, () => {
     const T = themeTokens(theme);
-    // The overlay ink is the accent pulled halfway to black/white, so it
-    // must not be a neutral grey: the channel spread survives the mix.
-    const ink = channels(hoverInk(T));
-    const spread = Math.max(...ink) - Math.min(...ink);
-    assert.ok(spread > 12, `${theme}: hover ink ${hoverInk(T)} lost the accent hue`);
+    // The overlay ink is the accent pulled halfway to black/white, so whatever
+    // character the accent has must survive the mix. A CHROMATIC accent must
+    // not wash out to neutral grey — the original point of this test. An
+    // ACHROMATIC accent (the Light theme deliberately has none: colour there
+    // belongs to the notes, not the chrome) must stay neutral rather than
+    // acquire a tint from nowhere.
+    const spreadOf = (hex) => { const c = channels(hex); return Math.max(...c) - Math.min(...c); };
+    const accentSpread = spreadOf(T.accent);
+    const inkSpread = spreadOf(hoverInk(T));
+    if (accentSpread > 12) {
+      assert.ok(inkSpread > 12, `${theme}: hover ink ${hoverInk(T)} lost the accent hue`);
+    } else {
+      assert.ok(inkSpread <= 12, `${theme}: hover ink ${hoverInk(T)} invented a hue the accent doesn't have`);
+    }
   });
 
   test(`hover on ${theme} stays translucent so it composites over any surface`, () => {

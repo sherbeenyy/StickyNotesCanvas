@@ -502,9 +502,9 @@ function TopChrome({T, tweaks, currentFolderName, query, setQuery, onNewNote, on
 
       <div data-backup-menu style={{position:'relative', display: narrow?'none':undefined}}>
         <button onClick={()=>setBackupOpen(o=>!o)} title="Save or restore a backup" style={{
-          height:30, padding:'0 12px', borderRadius: isTerm?2:8,
-          background:'#000', color:'#fff', border:`1px solid ${T.panelBorder}`,
-          fontWeight:500, fontSize:13, cursor:'pointer', display:'flex', alignItems:'center', gap:6,
+          height:30, padding:'0 12px', borderRadius: isTerm?2:5,
+          background:'transparent', color:T.panelText, border:`1px solid ${T.panelBorder}`,
+          fontWeight:500, fontSize:12.5, cursor:'pointer', display:'flex', alignItems:'center', gap:6,
         }}>
           {isTerm?'backup':'Backup'} <span style={{fontSize:9, opacity:.7, marginTop:1}}>▾</span>
         </button>
@@ -596,13 +596,13 @@ function FolderTree({T, folders, notes, currentFolder, setCurrentFolder,
           display:'flex', alignItems:'center', gap:8,
           padding:'7px 10px',
           borderRadius:6,
-          background: isActive ? withA(isAll?T.accent:f.hue, .18) : over ? withA(T.accent, .18) : 'transparent',
+          background: isActive ? withA(isAll||!T.folderHue?T.accent:f.hue, .10) : over ? withA(T.accent, .07) : 'transparent',
           color: T.panelText, fontSize:13, cursor:'pointer', marginBottom:2,
           outline: over ? `1px dashed ${T.accent}` : 'none',
         }}>
         {isAll
           ? <HomeIcon size={14} color={T.panelText}/>
-          : <FolderIcon size={14} color={f.hue} fill={f.hue} open={isActive}/>}
+          : <FolderIcon size={14} color={T.folderHue?f.hue:T.muted} fill={T.folderHue?f.hue:T.muted} open={isActive}/>}
         {(!isAll && renamingFolder===f.id) ? (
           <input autoFocus defaultValue={f.name} dir="auto"
             onClick={e=>e.stopPropagation()}
@@ -1303,7 +1303,7 @@ function Desktop({T, tweaks, currentFolder, folders, folderOrder, notes, allNote
         <div style={{
           position:'absolute', left:'50%', bottom:16, transform:'translateX(-50%)',
           background:T.panelText, color:T.panelBg, padding:'6px 14px',
-          borderRadius: T.sharp?2:999, fontSize:12, fontWeight:600, letterSpacing:.3,
+          borderRadius: T.sharp?2:5, fontSize:12, fontWeight:600, letterSpacing:.3,
           boxShadow:'0 4px 12px rgba(0,0,0,.2)', pointerEvents:'none', zIndex:500,
           fontFamily: '"'+tweaks.font+'", system-ui, sans-serif',
         }}>✋ drag to pan</div>
@@ -1350,7 +1350,7 @@ function Desktop({T, tweaks, currentFolder, folders, folderOrder, notes, allNote
         <div style={{
           position:'absolute', left:'50%', top:16, transform:'translateX(-50%)',
           background:T.accent, color:T.onAccent, padding:'7px 14px',
-          borderRadius: T.sharp?2:999, fontSize:12, fontWeight:700, letterSpacing:.3,
+          borderRadius: T.sharp?2:5, fontSize:12, fontWeight:700, letterSpacing:.3,
           boxShadow:'0 4px 12px rgba(0,0,0,.2)', pointerEvents:'none', zIndex:500,
           fontFamily: '"'+tweaks.font+'", system-ui, sans-serif',
         }}>🔗 click a note to link · esc to cancel</div>
@@ -1898,7 +1898,7 @@ function StickyNote({note, T, tweaks, folder, refCb, selected, selectedIds, setS
             </svg>
           )}
         </button>
-        {folder && <span title={folder.name} style={{width:6, height:6, background:folder.hue, borderRadius:'50%', flex:'none'}}/>}
+        {folder && <span title={folder.name} style={{width:6, height:6, background:T.folderHue?folder.hue:withA(ink,.35), borderRadius:'50%', flex:'none'}}/>}
         {tweaks.hideNoteTitles ? (
           <div style={{flex:1}}/>
         ) : editingTitle ? (
@@ -2598,7 +2598,7 @@ function FoldersDrawer({T, tweaks, folders, notes, currentFolder, setCurrentFold
       const ids = folderSubtreeIds(folders, f.id);
       return notes.filter(n => ids.has(n.folder)).length;
     })();
-    const swatch = isAll ? T.accent : f.hue;
+    const swatch = isAll ? T.accent : (T.folderHue ? f.hue : T.muted);
     const idleBg = isTerm ? '#0e1319' : 'rgba(0,0,0,.02)';
     // Theme-derived (issue #49): the old pair moved the row by 13/255 on
     // terminal and 8/255 on flat — a hover you had to hunt for.
@@ -2809,12 +2809,12 @@ function FoldersDrawer({T, tweaks, folders, notes, currentFolder, setCurrentFold
         onMouseEnter={e=>{ if(!isActive && !isDropTarget) e.currentTarget.style.background = rowHoverBg; }}
         onMouseLeave={e=>{ if(!isActive && !isDropTarget) e.currentTarget.style.background = idleBg; }}
       >
-        <div style={{width:4, borderRadius:2, background:swatch, flex:'none'}}/>
+        {T.folderHue && <div style={{width:4, borderRadius:2, background:swatch, flex:'none'}}/>}
         <div style={{flex:1, minWidth:0, display:'flex', alignItems:'center', gap:10}}>
           {chevronSlot}
           {isAll
             ? <HomeIcon size={16} color={T.panelText}/>
-            : <FolderIcon size={16} color={f.hue} fill={f.hue} open={isActive}/>}
+            : <FolderIcon size={16} color={T.folderHue?f.hue:T.muted} fill={T.folderHue?f.hue:T.muted} open={isActive}/>}
           <div style={{flex:1, minWidth:0}}>
             {(!isAll && renamingFolder===f.id) ? (
               <input autoFocus defaultValue={f.name} dir="auto"
@@ -2824,15 +2824,17 @@ function FoldersDrawer({T, tweaks, folders, notes, currentFolder, setCurrentFold
                 style={{width:'100%', background:'transparent', border:'none', outline:'none', color:T.panelText, fontSize:13, fontWeight:700, font:'inherit'}}
               />
             ) : (
-              <div dir="auto" style={{fontSize:13, fontWeight:700, color:T.panelText,
-                overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap',
-                fontFamily: 'inherit'}}>
-                {isAll ? 'All notes' : f.name}
+              <div dir="auto" style={{display:'flex', alignItems:'baseline', gap:8}}>
+                <div style={{flex:1, fontSize:12.5, fontWeight: isActive?600:400, color:T.panelText,
+                  overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap',
+                  fontFamily: 'inherit'}}>
+                  {isAll ? 'All notes' : f.name}
+                </div>
+                <div style={{fontFamily:'ui-monospace, monospace', fontSize:10.5, color:T.muted, flex:'none'}}>
+                  {count}
+                </div>
               </div>
             )}
-            <div style={{fontSize:11, color:T.muted, marginTop:2, fontFamily: 'inherit'}}>
-              {count} {count===1?'note':'notes'}
-            </div>
           </div>
           {!isAll && isActive && (
             <button onClick={(e)=>{e.stopPropagation(); onDeleteFolder(f.id);}} title="Delete folder"
@@ -3026,12 +3028,16 @@ function FoldersDrawer({T, tweaks, folders, notes, currentFolder, setCurrentFold
                 // A solid accent button can't take the translucent panel
                 // hover; it shifts the accent itself instead — darker on the
                 // light themes, lighter on the dark one. (issue #49)
-                onMouseEnter={e=>{ e.currentTarget.style.background = mixHex(T.accent, isDarkSurface(T.panelBg) ? '#ffffff' : '#000000', .18); }}
-                onMouseLeave={e=>{ e.currentTarget.style.background = T.accent; }}
+                onMouseEnter={e=>{ e.currentTarget.style.background = T.folderHue ? mixHex(T.accent, isDarkSurface(T.panelBg) ? '#ffffff' : '#000000', .18) : hoverBg(T); }}
+                onMouseLeave={e=>{ e.currentTarget.style.background = T.folderHue ? T.accent : 'transparent'; }}
                 style={{
-                flex:1, height:28, padding:'0 10px', borderRadius: isTerm?2:6,
-                background:T.accent, color: isTerm?'#0a0c10':'#fff', border:'none',
-                fontWeight:700, fontSize:12, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+                flex:1, height:30, padding:'0 10px', borderRadius: isTerm?2:5,
+                // A theme that keeps colour out of its chrome gets an outlined
+                // button; only the ones with a coloured accent fill it.
+                background: T.folderHue ? T.accent : 'transparent',
+                color: T.folderHue ? (isTerm?'#0a0c10':'#fff') : T.panelText,
+                border: T.folderHue ? 'none' : `1px solid ${T.panelBorder}`,
+                fontWeight:600, fontSize:12, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6,
                 transition:'background .1s',
               }}>
                 <span style={{fontSize:14, lineHeight:1, marginTop:-1}}>+</span>

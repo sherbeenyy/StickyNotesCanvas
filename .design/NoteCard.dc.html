@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #1a1a18; } a:hover { color: #6b6a65; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+<div style="width: 960px; height: 460px; background: #f4f3f0; padding: 32px; display: flex; flex-direction: column; gap: 22px; color: #1a1a18;">
+  <div style="display: flex; gap: 40px; align-items: baseline;">
+    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8b8a84;">Note card</div>
+    <div style="font-size: 12.5px; color: #6b6a65;">Flat fill, 1px border one step darker than the fill, 3px radius. No drop shadow, no rotation.</div>
+  </div>
+
+  <div style="display: flex; gap: 28px; align-items: flex-start;">
+
+    <!-- RESTING -->
+    <div style="display: flex; flex-direction: column; gap: 9px;">
+      <div style="font-size: 11px; color: #8b8a84;">Resting</div>
+      <div style="width: 268px; height: 190px; background: #f5e9bf; border: 1px solid #e0d29b; border-radius: 3px; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="height: 32px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 11px; border-bottom: 1px solid #e5d8a8;">
+          <div style="flex-grow: 1; font-size: 12px; font-weight: 600; color: #4a4123;">Groceries</div>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#7a6a2e" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </div>
+        <div style="flex-grow: 1; padding: 11px 13px; font-family: Newsreader, Georgia, serif; font-size: 15px; line-height: 1.5; color: #3d3620;">
+          <div style="font-weight: 500; font-size: 16.5px; margin-bottom: 4px;">Weekend run</div>
+          <div>— sourdough</div>
+          <div>— olive oil, the green one</div>
+        </div>
+        <div style="height: 26px; flex: none; display: flex; align-items: center; gap: 5px; padding: 0 11px; border-top: 1px solid #e5d8a8;">
+          <div style="flex-grow: 1;"></div>
+          <div style="width: 9px; height: 9px; border-radius: 50%; background: #e8a9a2;"></div>
+          <div style="width: 9px; height: 9px; border-radius: 50%; background: #a9c6e0;"></div>
+          <div style="width: 9px; height: 9px; border-radius: 50%; background: #edd89a; box-shadow: 0 0 0 1.5px #4a4123;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDITING -->
+    <div style="display: flex; flex-direction: column; gap: 9px;">
+      <div style="font-size: 11px; color: #8b8a84;">Editing — border darkens, no colour change</div>
+      <div style="width: 268px; height: 190px; background: #f5e9bf; border: 1px solid #4a4123; border-radius: 3px; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="height: 32px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 11px; border-bottom: 1px solid #e5d8a8;">
+          <div style="flex-grow: 1; font-size: 12px; font-weight: 600; color: #4a4123;">Groceries</div>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#7a6a2e" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </div>
+        <div style="flex-grow: 1; padding: 11px 13px; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.62; color: #3d3620;">
+          <div># Weekend run</div>
+          <div>- **sourdough**</div>
+          <div>- olive oil, the green<span style="display: inline-block; width: 1.5px; height: 14px; background: #3d3620; vertical-align: -2px; margin-left: 1px;"></span></div>
+        </div>
+        <div style="height: 26px; flex: none; display: flex; align-items: center; padding: 0 11px; border-top: 1px solid #e5d8a8; font-size: 10px; color: #7a6a2e;">
+          <div style="font-family: 'JetBrains Mono', monospace;">markdown</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SWATCHES -->
+    <div style="display: flex; flex-direction: column; gap: 9px;">
+      <div style="font-size: 11px; color: #8b8a84;">Fills — desaturated one step from today</div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; width: 268px;">
+        <div style="height: 58px; background: #eec5c0; border: 1px solid #dda9a3; border-radius: 3px;"></div>
+        <div style="height: 58px; background: #f0cdd8; border: 1px solid #e0b0be; border-radius: 3px;"></div>
+        <div style="height: 58px; background: #d3e3f0; border: 1px solid #b3cbdf; border-radius: 3px;"></div>
+        <div style="height: 58px; background: #d5e5c8; border: 1px solid #b8cfa7; border-radius: 3px;"></div>
+        <div style="height: 58px; background: #f5e9bf; border: 1px solid #e0d29b; border-radius: 3px;"></div>
+        <div style="height: 58px; background: #f3d9c4; border: 1px solid #e2bd9e; border-radius: 3px;"></div>
+        <div style="height: 58px; background: #ded1ef; border: 1px solid #c6b3de; border-radius: 3px;"></div>
+        <div style="height: 58px; background: #fcfcfa; border: 1px solid #ddd9d1; border-radius: 3px;"></div>
+      </div>
+      <div style="font-size: 11.5px; color: #6b6a65; width: 268px; line-height: 1.5;">Colour lives only on notes. Every piece of app chrome is achromatic.</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

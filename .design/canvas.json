@@ -1,0 +1,14 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html",     "x": 0,    "y": 0,    "w": 1280, "h": 800, "title": "App window" },
+    { "file": "Drawer.dc.html",   "x": 1400, "y": 0,    "w": 720,  "h": 560, "title": "Folder drawer — today vs proposed" },
+    { "file": "NoteCard.dc.html", "x": 0,    "y": 940,  "w": 960,  "h": 460, "title": "Note card" },
+    { "file": "Panels.dc.html",   "x": 1080, "y": 940,  "w": 900,  "h": 620, "title": "Preferences & dialog" },
+    { "file": "AltMono.dc.html",  "x": 0,    "y": 1700, "w": 1280, "h": 800, "title": "Alternate — Mono Dark" }
+  ],
+  "annotations": [
+    { "id": "thesis", "x": 0, "y": -150, "w": 620, "text": "Direction: Quiet Paper.\nOne rule — colour belongs to notes, never to chrome. No gradients, no accent bars, no filled pills. Hairlines and type carry the hierarchy.\nType: Instrument Sans (UI) + Newsreader (note bodies) + JetBrains Mono (counts, code, zoom)." },
+    { "id": "alt-note", "x": 0, "y": 1560, "w": 620, "text": "Alternate direction, not the deliverable. Same no-colour-in-chrome rule taken further: dark, mono-labelled, notes as flat dark cards with a single hue dot. Pick this instead if you want the app to read as a tool rather than as paper." }
+  ],
+  "launch": { "view": "canvas" }
+}
